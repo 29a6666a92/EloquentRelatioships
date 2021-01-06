@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Post;
 use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -19,134 +20,96 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/create_user',function(){
-    $user = User::create([
-        'name' => 'Hafid Dwi Adha',
-        'email' => 'hafiddwiadha@gmail.com',
-        'password' => bcrypt('password')
-    ]);
-    return $user;
-});
 
-Route::get('/create_user_profile',function(){
-    $user = User::find(1);
-    $data = [
-        'phone' => '0877xxxxxxx1',
-        'address' => 'Padang'
-    ];
+/**
+ * 
+ *  One To Many
+ */
 
-    // Cara -1
-    $user->profile()->create($data);
+ Route::get('/create_user',function(){
+     $user = User::create([
+         'name' => 'Fikri',
+         'email' => 'fikri@gmail.com',
+         'password' => bcrypt('password')
+     ]);
+     return $user;
 
-    // Cara -2
-    // $profile = new Profile($data);
-    // $user->profile()->save($profile);
-    return $user;
-});
+ });
 
-Route::get('/read_user_profile',function(){
-    $user = User::find(1);
+ Route::get('/create_user_posts',function(){
+     $user = User::findOrFail(2);
 
-    $data = [
-        'name' => $user->name,
-        'email' => $user->email,
-        'phone' => $user->profile->phone,
-        'address' => $user->profile->address
-    ];
+     $user->posts()->create([
+         'title' => 'Second Post by Hafid',
+         'body' => 'HEHEHHEHEHAHAHHA'
+     ]);
 
-    return $data;
+     return $user;
+ });
 
-});
+ Route::get('/read_user_posts',function(){
+     $user = User::findOrFail(2);
 
+     $posts = $user->posts()->get();
 
-Route::get('/update_user_profile',function(){
-    $user = User::find(1);
-    $user->profile->update([
-        'phone' => '12345',
-        'address' => 'Jambi'
-    ]);
+     foreach($posts as $post){
+         $data[] = [
+             'user_id' => $post->user_id,
+             'name' => $post->user->name,
+             'email' => $post->user->email,
+             'id' => $post->id,
+             'title' => $post->title,
+             'body' => $post->body,
+         ];
+     }
 
-    return $user;
-});
+     return $data;
 
-Route::get('/delete_user_profile',function(){
-    $user = User::find(1);
-    $user->profile->delete();
-    return 'success';
-});
+ });
 
-Route::get('create_user_posts',function(){
-    $user = User::find(1);
+ Route::get('update_user_posts',function(){
+     $user = User::findOrFail(1);
 
-    $user->posts()->create([
-        'title' => 'Last Post',
-        'body' => 'lorem lorem'
-    ]);
+     $user->posts()->where('id',1)->update([
+         'title' => 'Fall in love in january',
+         'body' => 'by the way it\'s aprial moops'
+     ]);
 
-    return $user;
-});
+      $posts = $user->posts()->get();
 
-Route::get('/read_user_posts',function(){
-    $user = User::find(1);
+     foreach($posts as $post){
+         $data[] = [
+             'user_id' => $post->user_id,
+             'name' => $post->user->name,
+             'email' => $post->user->email,
+             'id' => $post->id,
+             'title' => $post->title,
+             'body' => $post->body,
+         ];
+     }
 
-    $posts = $user->posts()->get();
+     return $data;
 
-    foreach($posts as $post){
-        $data [] = [
-            'user_id' => $post->user_id,
-            'name' => $post->user->name,
-            'email' => $post->user->email,
-            'id' => $post->id,
-            'title' => $post->title,
-            'body' => $post->body,
-        ];
-    }
-    
-    return $data;
+ });
 
-});
+ Route::get('delete_user_posts',function(){
+     $user = User::findOrFail(2);
 
-Route::get('/update_user_post',function(){
-    $user = User::findOrFail(1);
+     $user->posts()->where('id',3)->delete();
 
-    $user->posts()->where('id',2)->update([
-                    'title' => 'Hehe First',
-                    'body' => 'Hello',
-                ]);
+      $posts = $user->posts()->get();
 
-   $posts = $user->posts()->get();
+     foreach($posts as $post){
+         $data[] = [
+             'user_id' => $post->user_id,
+             'name' => $post->user->name,
+             'email' => $post->user->email,
+             'id' => $post->id,
+             'title' => $post->title,
+             'body' => $post->body,
+         ];
+     }
 
-    foreach($posts as $post){
-        $data [] = [
-            'user_id' => $post->user_id,
-            'name' => $post->user->name,
-            'email' => $post->user->email,
-            'id' => $post->id,
-            'title' => $post->title,
-            'body' => $post->body,
-        ];
-    }
-    
-    return $data;
-});
+     return $data;
 
-Route::get('/delete_user_posts',function(){
-    $user = User::findOrFail(1);
-
-    $user->posts()->where('id',1)->delete();
-
-    $posts = $user->posts()->get();
-
-    foreach($posts as $post){
-        $data[] = [
-            'user_id' => $post->user_id,
-            'name' => $post->user->name,
-            'email' => $post->user->emai,
-            'title' => $post->title,
-            'body' => $post->body,
-        ];
-    }
-
-    return $data;
-
-});
+ });

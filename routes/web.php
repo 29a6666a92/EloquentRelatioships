@@ -74,3 +74,79 @@ Route::get('/delete_user_profile',function(){
     $user->profile->delete();
     return 'success';
 });
+
+Route::get('create_user_posts',function(){
+    $user = User::find(1);
+
+    $user->posts()->create([
+        'title' => 'Last Post',
+        'body' => 'lorem lorem'
+    ]);
+
+    return $user;
+});
+
+Route::get('/read_user_posts',function(){
+    $user = User::find(1);
+
+    $posts = $user->posts()->get();
+
+    foreach($posts as $post){
+        $data [] = [
+            'user_id' => $post->user_id,
+            'name' => $post->user->name,
+            'email' => $post->user->email,
+            'id' => $post->id,
+            'title' => $post->title,
+            'body' => $post->body,
+        ];
+    }
+    
+    return $data;
+
+});
+
+Route::get('/update_user_post',function(){
+    $user = User::findOrFail(1);
+
+    $user->posts()->where('id',2)->update([
+                    'title' => 'Hehe First',
+                    'body' => 'Hello',
+                ]);
+
+   $posts = $user->posts()->get();
+
+    foreach($posts as $post){
+        $data [] = [
+            'user_id' => $post->user_id,
+            'name' => $post->user->name,
+            'email' => $post->user->email,
+            'id' => $post->id,
+            'title' => $post->title,
+            'body' => $post->body,
+        ];
+    }
+    
+    return $data;
+});
+
+Route::get('/delete_user_posts',function(){
+    $user = User::findOrFail(1);
+
+    $user->posts()->where('id',1)->delete();
+
+    $posts = $user->posts()->get();
+
+    foreach($posts as $post){
+        $data[] = [
+            'user_id' => $post->user_id,
+            'name' => $post->user->name,
+            'email' => $post->user->emai,
+            'title' => $post->title,
+            'body' => $post->body,
+        ];
+    }
+
+    return $data;
+
+});
